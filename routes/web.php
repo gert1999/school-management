@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MollieController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 
@@ -24,6 +25,14 @@ Route::get('/show/{id}',[StudentController::class, 'show']);
 Route::get('/create',[StudentController::class, 'create']);
 Route::post('/store',[StudentController::class, 'store']);
 Route::post('/update/{id}',[StudentController::class, 'update']);
+
+Route::get('/student/pdf/{id}',[StudentController::class, 'pdf']);
+Route::get('/test', function () {
+    return view('test');
+});
+
+Route::get('/mollie-payment',[MollieController::class, 'preparePayment'])->name('mollie.payment');
+Route::get('/payment-success',[MollieController::class, 'paymentSuccess'])->name('payment.success');
 
 Auth::routes();
 

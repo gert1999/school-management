@@ -3,7 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use Dompdf\Dompdf;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\PDF;
+use Illuminate\Support\Facades\App;
+use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class StudentController extends Controller
 {
@@ -20,7 +27,12 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all();
-        return view('student',['students'=>$students,'layout'=>'index']);
+        $data = DB::table('users')
+            ->join('classes','classes.user_id', '=', 'users.id')
+            ->select('*')
+            ->get();
+
+        return view('student',['students'=>$students, 'data'=>$data, 'layout'=>'index']);
     }
 
     /**
@@ -31,7 +43,13 @@ class StudentController extends Controller
     public function create()
     {
         $students = Student::all();
-        return view('student',['students'=>$students,'layout'=>'create']);
+
+        $data = DB::table('users')
+            ->join('classes','classes.user_id', '=', 'users.id')
+            ->select('*')
+            ->get();
+
+        return view('student',['students'=>$students, 'data'=>$data,'layout'=>'create']);
     }
 
     /**
@@ -77,7 +95,12 @@ class StudentController extends Controller
         $student = Student::find($id);
         $students = Student::all();
 
-        return view('student',['students'=>$students,'student'=>$student, 'layout'=>'edit']);
+        $data = DB::table('users')
+            ->join('classes','classes.user_id', '=', 'users.id')
+            ->select('*')
+            ->get();
+
+        return view('student',['students'=>$students,'student'=>$student, 'data' => $data, 'layout'=>'edit']);
     }
 
     /**
@@ -112,5 +135,30 @@ class StudentController extends Controller
         $student->delete();
 
         return redirect('/home');
+    }
+
+    public function pdf($id)
+    {
+        $student = Student::find($id);
+        $students = Student::all();
+
+        $data = DB::table('students')
+            ->join('vakken','vakken.student_id', '=', 'students.id')
+            ->select('*')
+            ->where('students.id', $id)
+            ->get();
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(view('student_pdf',['students'=>$students,'student'=>$student, 'data'=>$data, 'layout'=>'edit']));
+
+//        $pdf->setOption('enable-javascript', true);
+//        $pdf->setOption('images', true);
+//        $pdf->setOption('javascript-delay', 13000); // page load is quick but even a high number doesn't help
+//        $pdf->setOption('enable-smart-shrinking', true);
+//        $pdf->setOption('no-stop-slow-scripts', true);
+
+        return $pdf->stream();
+
+//        return view('invoice';
     }
 }

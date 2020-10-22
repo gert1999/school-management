@@ -6,7 +6,9 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav">
             <a class="nav-link" href="{{url('/home')}}">Home <span class="sr-only">(current)</span></a>
-            <a class="nav-link" href="{{url('/create')}}">Create</a>
+            <a class="nav-link" href="{{url('/create')}}">Gebruikers</a>
+            <a class="nav-link" href="{{url('/create')}}">Studenten</a>
+            <a class="nav-link" href="{{url('/create')}}">Docenten</a>
             <a class="nav-link" href="{{ url('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Uitloggen</a>
 
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
